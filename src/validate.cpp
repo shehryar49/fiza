@@ -13,7 +13,7 @@ bool packageNameIsValid(const std::string name){
 		ch = name[i];
 		if ((ch < 'a' || ch > 'z') &&
 				(ch < 'A' || ch > 'Z') &&
-				(ch < '0' || ch > 9))
+				(ch < '0' || ch > '9'))
 			return false;
 	}
 	return true;
