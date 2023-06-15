@@ -69,6 +69,7 @@ std::vector<std::string> packageListInstalled(){
 		std::string name = entry.path().filename();
 		if (!hasEnding(name, PKG_EXT))
 			continue; // not a dll or so file, skip it
+		name.resize(name.length() - strlen(PKG_EXT));
 		ret.push_back(name);
 	}
 	return ret;
@@ -82,4 +83,14 @@ bool packageIsInstalled(std::string packageName){
 			return true;
 	}
 	return false;
+}
+
+std::vector<std::string> packageListAvailable(){
+	std::vector<std::string> ret;
+	// TODO implement packageListAvailable
+	return ret;
+}
+
+bool packageIsAvailable(std::string packageName){
+	return false; // TODO implement packageIsAvailable
 }
