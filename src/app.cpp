@@ -3,7 +3,8 @@
 #include <string.h>
 
 #include "consts.h"
-#include "validate.h"
+#include "utils.h"
+#include "fiza.h"
 
 const char* USAGE_STR =
 	"Fiza - package manager for Plutonium - " PLATFORM_STR "\n"
@@ -14,6 +15,7 @@ const char* USAGE_STR =
 	"\tremove\t\tRemove a package\n";
 
 int main(int argc, char** argv){
+	packageListInstalled();
 	if (argc != 3){
 		std::cerr << USAGE_STR;
 		exit(1);
