@@ -2,7 +2,7 @@
 #define CONSTS_H
 
 /// repo URL
-#define REPO_URL "http://https://plutonium-lang.000webhostapp.com/fiza/"
+#define REPO_URL "https://plutonium-lang.000webhostapp.com/fiza/"
 
 #ifdef __linux__
 #define PLATFORM_STR "Linux"

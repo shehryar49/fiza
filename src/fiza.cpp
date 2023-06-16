@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <filesystem>
-
+#include <exception>
 #include "consts.h"
 #include "fiza.h"
 
@@ -53,14 +53,22 @@ bool packageInstall(std::string packageName, bool quiet){
 	return true;
 }
 
-bool packageRemove(std::string packageName, bool quiet){
-	if (std::remove((INSTALL_DIR + packageName + PKG_EXT).c_str())){
-		return true;
-	}
-	if (!quiet){
-		std::cerr << "Failed to remove file " + packageName + PKG_EXT + "\n";
+bool packageRemove(std::string packageName, bool quiet)
+{
+  try
+  {
+    std::filesystem::remove((INSTALL_DIR + packageName + PKG_EXT).c_str());
+	return true;
+  }
+  catch(std::exception& e)
+  {
+	if(!quiet)
+	{
+      std::cerr<<e.what()<<std::endl;
 	}
 	return false;
+  }
+  return true;
 }
 
 std::vector<std::string> packageListInstalled(){
