@@ -4,5 +4,5 @@ if [ $# = 0 ]; then
 	g++ src/*.h src/*.cpp -s -O3 -o fiza -lcurl -std=c++17;
 elif [ $1 = "debug" ]; then
 	echo "building debug config";
-	g++ src/*.h src/*.cpp -g -o fiza -lcurl -std=c++17;
+	g++ -DDEBUG src/*.h src/*.cpp -g -o fiza -lcurl -std=c++17;
 fi
