@@ -18,9 +18,6 @@
 
 #include <curl/curl.h>
 
-#define red "\e[0;31m"
-#define green "\e[0;32m"
-#define reset "\e[0m"
 
 const char* USAGE_STR =
 	"Fiza - package manager for Plutonium - " PLATFORM_STR "\n"
@@ -164,9 +161,9 @@ int main(int argc, char** argv)
 		}
 
 		if (packageRemove(packageName)){
-			std::cout<<green<<"[+] "<<reset<<packageName << " was removed\n";
+			std::cout<<"[+] "<<packageName << " was removed\n";
 		}else{
-			std::cerr<<red<<"[-] " << packageName << " was not removed\n"<<reset;
+			std::cerr<<"[-] " << packageName << " was not removed\n";
 			exit(1);
 		}
 
