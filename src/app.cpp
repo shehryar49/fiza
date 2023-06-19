@@ -1,9 +1,11 @@
 #ifdef _WIN32
+#define CURL_STATICLIB
 #define _CRT_SECURE_NO_WARNINGS //fuck microsoft
 #pragma comment(lib,"crypt32.lib")
 #pragma comment(lib,"Normaliz.lib")
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"Wldap32.lib")
+#pragma comment(lib,"libcurl_a.lib")
 #else
 #include <unistd.h>
 #endif

@@ -74,7 +74,7 @@ bool packageRemove(std::string packageName, bool quiet)
 std::vector<std::string> packageListInstalled(){
 	std::vector<std::string> ret;
 	for (const auto &entry : std::filesystem::directory_iterator(INSTALL_DIR)){
-		std::string name = entry.path().filename();
+		std::string name = entry.path().u8string();
 		if (!hasEnding(name, PKG_EXT))
 			continue; // not a dll or so file, skip it
 		name.resize(name.length() - strlen(PKG_EXT));
@@ -86,7 +86,7 @@ std::vector<std::string> packageListInstalled(){
 bool packageIsInstalled(std::string packageName){
 	std::string match = packageName + PKG_EXT;
 	for (const auto &entry : std::filesystem::directory_iterator(INSTALL_DIR)){
-		std::string name = entry.path().filename();
+		std::string name = entry.path().filename().u8string();
 		if (entry.path().filename() == match)
 			return true;
 	}
