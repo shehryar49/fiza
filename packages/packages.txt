@@ -2,3 +2,4 @@ sfml https://github.com/shehryar49/pltSFML
 nuke https://github.com/shehryar49/nuke
 turtle https://github.com/shehryar49/turtle
 mariadb https://github.com/shehryar49/pltMariaDB
+pluto https://github.com/Nafees10/plutoc
