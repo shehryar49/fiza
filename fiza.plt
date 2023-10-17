@@ -40,7 +40,7 @@ function installPackage(var name,var url)
       exit()
     }
     println("[+] Copying files")
-    ret = system("sudo cp tmp/"+name+".so /opt/plutonium/modules")
+    ret = system("sudo cp tmp/"+name+".so /opt/plutonium/modules && rm -rf tmp")
     if(ret != 0)
     {
       println("copy failed.")
