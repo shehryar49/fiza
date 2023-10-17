@@ -1,9 +1,10 @@
+#!/usr/bin/plutonium
 # Plutonium Package Manager
 # Written by Shahryar Ahmad
 # 10 Feb 2022
 
 import std/algo.plt
-#import libcurl as lc
+import libcurl as lc
 import regex
 
 var openedFile = nil
@@ -16,36 +17,36 @@ function WriteMemory(var bytes)
   println("Downloaded ",size, " bytes ")
   fwrite(bytes,openedFile)
 }
-function installPackage(var name)
+function installPackage(var name,var url)
 {
   println("installing from ",name)
-  return nil
-  var c = nil #lc.Curl()
-  #c.setopt(lc.OPT_URL,"https://plutonium-lang.000webhostapp.com/downloads/modules/"+name+"/"+os+"/"+name+".dll")
-  #c.setopt(lc.OPT_FOLLOWLOCATION,1)
-  #c.setopt(lc.OPT_WRITEFUNCTION,WriteMemory)
-  try
+  if(@os == "Windows 32 bit" or @os == "Windows 64 bit")
   {
-    openedFile = open("C:\\plutonium\\modules\\"+name+".dll","wb")
-  }
-  catch(err)
-  {
-     println(err.msg)
-     exit()
-  }
+    # download dll from repo
 
-  for(var i=1 to 3 step 1)
-  {
-    println("Starting download in ",4-i)
-    sleep(1000)
-    system("cls")
   }
-  var res = c.perform()
-  #if(res != lc.CURLE_OK)
-  #{
-    #println("Installation Failed: ",lc.strerror(res))
-   # exit()
-  #}
+  else # unix like systems (install from source)
+  {
+    var ret = system("git clone "+url+" tmp")
+    if(ret != 0)
+    {
+      println("git clone failed.")
+      exit()
+    }
+    ret = system("cd tmp && cmake . -DCMAKE_BUILD_TYPE=Release && make && cd ..")
+    if(ret != 0)
+    {
+      println("build failed")
+      exit()
+    }
+    println("[+] Copying files")
+    ret = system("sudo cp tmp/"+name+".so /opt/plutonium/modules")
+    if(ret != 0)
+    {
+      println("copy failed.")
+      exit()
+    }
+  }
   println("Installation Done!")
 }
 function removePackage(var name)
@@ -88,7 +89,7 @@ if(action == "install")
     println("Package ",name," was not found!")
     exit()
   }
-  installPackage(url)
+  installPackage(name,url)
 }
 else if(action == "remove")
   removePackage(name)
