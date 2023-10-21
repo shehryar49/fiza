@@ -1,9 +1,12 @@
 #!/usr/bin/plutonium
-# Plutonium Package Manager
-# Written by Shahryar Ahmad
-# 10 Feb 2022
+#-
+ Plutonium Package Manager
+ Written by Shahryar Ahmad
+ 10 Feb 2022
+ This code is available under MIT license
+-#
 
-import std/algo.plt
+
 import libcurl as lc
 
 
@@ -17,6 +20,17 @@ function WriteMemory(var bytes)
   println("Downloaded ",size, " bytes ")
   fwrite(bytes,openedFile)
 }
+function downloadFile(var url,var outputPath)
+{
+  openedFile = open(outputPath,"wb")
+  var req = libcurl.Curl()
+  req.setopt(libcurl.OPT_URL,url)
+  req.setopt(libcurl.OPT_FOLLOWLOCATION,1)
+  req.setopt(libcurl.OPT_WRITEFUNCTION,WriteMemory)
+  var res = req.perform()
+  if(res != libcurl.CURLE_OK)
+    throw Error(libcurl.strerror(res))
+}
 function installPackage(var name,var url,var ver)
 {
 
@@ -27,21 +41,13 @@ function installPackage(var name,var url,var ver)
       url = url + "/releases/download/"+ver+"/"+name+"-win64.dll"
     else
       url = url + "/releases/download/"+ver+"/"+name+"-win32.dll"
-    var c = lc.Curl()
-    c.setopt(lc.OPT_URL,url)
-    c.setopt(lc.OPT_FOLLOWLOCATION,1)
-    c.setopt(lc.OPT_WRITEFUNCTION,WriteMemory)
-    openedFile = open("C:\\plutonium\\modules\\"+name+".dll","wb")
-    var res = c.perform()
-    if(res != lc.CURLE_OK)
-    {
-      println(lc.strerror(res))
-      return 0
-    }
+    downloadFile(url,"C:\\plutonium\\modules\\"+name+".dll")
   }
   else # unix like systems (install from source)
   {
-    #https://github.com/shehryar49/repo/archive/refs/tags/1.0.0.tar.gz
+    url = url + "/archive/refs/tags/"+ver+".tar.gz"
+    downloadFile(url,"fizatmp.tar.gz")
+    return nil
     var ret = system("git clone "+url+" tmp")
     if(ret != 0)
     {
@@ -71,6 +77,13 @@ function removePackage(var name)
   else
     system("sudo rm /opt/plutonium/modules/"+name+".so")
 }
+function listPackages()
+{
+  if(@os == "Windows 32 bit" or @os == "Windows 64 bit")
+    system("dir C:\\plutonium\\modules")
+  else 
+    system("ls /opt/plutonium/modules")
+}
 function updatePackageList()
 {
   var c = lc.Curl()
@@ -95,50 +108,53 @@ function updatePackageList()
 }
 
 #########
-if(len(argv) == 1 and argv[0] == "update")
-{
-  updatePackageList()
-  exit()
-}
-if(len(argv) != 2)
-{
-  println("usage: plutonium fiza <action> <package>")
-  println("Supported actions: ")
-  println("\tinstall")
-  println("\tremove")
-  exit()
-}
-var action = argv[0]
-var name = argv[1]
 
-if(action == "install")
+if(len(argv) == 1 and argv[0] == "update")
+  updatePackageList()
+else if(len(argv)==1 and argv[0]=="list")
+  listPackages()
+else if(len(argv) == 2)
 {
-  var srcfile = nil
-  if(@os == "Windows 64 bit" or @os == "Windows 32 bit")
-    srcfile = open("C:\\plutonium\\fiza\\packages.txt","r")
-  else
-    srcfile = open("/opt/plutonium/fiza/packages.txt","r")
-  var lines = readlines(srcfile)
-  var url = nil
-  var ver = nil
-  foreach(var line: lines)
+  var action = argv[0]
+  var name = argv[1]
+
+  if(action == "install")
   {
-    var parts = split(line," ")
-    if(parts[0] == name)
+    var srcfile = nil
+    if(@os == "Windows 64 bit" or @os == "Windows 32 bit")
+      srcfile = open("C:\\plutonium\\fiza\\packages.txt","r")
+    else
+      srcfile = open("/opt/plutonium/fiza/packages.txt","r")
+    var lines = readlines(srcfile)
+    var url = nil
+    var ver = nil
+    foreach(var line: lines)
     {
-      url = parts[1]
-      ver = parts[2]
+      var parts = split(line," ")
+      if(parts[0] == name)
+      {
+        url = parts[1]
+        ver = parts[2]
+      }
     }
-    
+    if(url == nil)
+    {
+      println("Package ",name," was not found!\nYou can update package list and retry.")
+      exit()
+    }
+    installPackage(name,url,ver)
   }
-  if(url == nil)
-  {
-    println("Package ",name," was not found!")
-    exit()
-  }
-  installPackage(name,url,ver)
+  else if(action == "remove")
+    removePackage(name)
+  else
+    println("Invalid action specified.See DOCS")
 }
-else if(action == "remove")
-  removePackage(name)
 else
-  println("Invalid action specified.See DOCS")
+{
+  println("usage: plutonium fiza <action> [package]")
+  println("Examples: ")
+  println("\tinstall packageName")
+  println("\tremove packageName")
+  println("\tupdate")
+  println("\tlist")
+}
