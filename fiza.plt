@@ -7,15 +7,15 @@
 -#
 
 
-import libcurl as lc
+import libcurl
 
 
 var openedFile = nil
 var size = 0
-
+var clearCommand = nil
 function WriteMemory(var bytes)
 {
-  system("cls")
+  system(clearCommand)
   size+=len(bytes)
   println("Downloaded ",size, " bytes ")
   fwrite(bytes,openedFile)
@@ -30,6 +30,7 @@ function downloadFile(var url,var outputPath)
   var res = req.perform()
   if(res != libcurl.CURLE_OK)
     throw Error(libcurl.strerror(res))
+  close(openedFile)
 }
 function installPackage(var name,var url,var ver)
 {
@@ -47,28 +48,17 @@ function installPackage(var name,var url,var ver)
   {
     url = url + "/archive/refs/tags/"+ver+".tar.gz"
     downloadFile(url,"fizatmp.tar.gz")
-    return nil
-    var ret = system("git clone "+url+" tmp")
+    var ret = system("mkdir fizatmp && tar -xf fizatmp.tar.gz -C fizatmp --strip-components 1")
     if(ret != 0)
-    {
-      println("git clone failed.")
-      exit()
-    }
-    ret = system("cd tmp && cmake . -DCMAKE_BUILD_TYPE=Release && make && cd ..")
+      throw Error("Failed to extract archive!")
+    ret = system("cd fizatmp && cmake . -DCMAKE_BUILD_TYPE=Release && make && cd ..")
     if(ret != 0)
-    {
-      println("build failed")
-      exit()
-    }
-    println("[+] Copying files")
-    ret = system("sudo cp tmp/"+name+".so /opt/plutonium/modules && rm -rf tmp")
+      throw Error("Build failed.")
+    ret = system("sudo cp fizatmp/"+name+".so /opt/plutonium/modules")
     if(ret != 0)
-    {
-      println("copy failed.")
-      exit()
-    }
+      throw Error("[-] Failed to copy files")
+    ret = system("rm -rf fizatmp && rm fizatmp.tar.gz")
   }
-  println("Installation Done!")
 }
 function removePackage(var name)
 {
@@ -82,19 +72,19 @@ function listPackages()
   if(@os == "Windows 32 bit" or @os == "Windows 64 bit")
     system("dir C:\\plutonium\\modules")
   else 
-    system("ls /opt/plutonium/modules")
+    system("ls -1 /opt/plutonium/modules")
 }
 function updatePackageList()
 {
-  var c = lc.Curl()
-  c.setopt(lc.OPT_URL,"https://raw.githubusercontent.com/shehryar49/fiza/main/packages/packages.txt")
-  c.setopt(lc.OPT_FOLLOWLOCATION,1)
-  c.setopt(lc.OPT_WRITEFUNCTION,lc.WriteMemory)
+  var c = libcurl.Curl()
+  c.setopt(libcurl.OPT_URL,"https://raw.githubusercontent.com/shehryar49/fiza/main/packages/packages.txt")
+  c.setopt(libcurl.OPT_FOLLOWLOCATION,1)
+  c.setopt(libcurl.OPT_WRITEFUNCTION,libcurl.WriteMemory)
   var res = c.perform()
-  if(res != lc.CURLE_OK)
+  if(res != libcurl.CURLE_OK)
   {
     println("Error updading package list.")
-    println(lc.strerror(res))
+    println(libcurl.strerror(res))
     return nil
   }
   var file = nil
@@ -122,9 +112,15 @@ else if(len(argv) == 2)
   {
     var srcfile = nil
     if(@os == "Windows 64 bit" or @os == "Windows 32 bit")
+    {
       srcfile = open("C:\\plutonium\\fiza\\packages.txt","r")
+      clearCommand = "cls"
+    }
     else
+    {
       srcfile = open("/opt/plutonium/fiza/packages.txt","r")
+      clearCommand = "clear"
+    }
     var lines = readlines(srcfile)
     var url = nil
     var ver = nil
@@ -137,12 +133,26 @@ else if(len(argv) == 2)
         ver = parts[2]
       }
     }
+    if(ver[len(ver)-1] == "\r") # remove carriage returns
+    {
+      ver = ver.substr(0,len(ver)-2)
+    }
     if(url == nil)
     {
       println("Package ",name," was not found!\nYou can update package list and retry.")
       exit()
     }
-    installPackage(name,url,ver)
+    try
+    {
+      installPackage(name,url,ver)
+    }
+    catch(err)
+    {
+      println("[-] ",err.msg)
+      println("[-] Installation failed.")
+      exit()
+    }
+    println("[+] Installation done!")
   }
   else if(action == "remove")
     removePackage(name)
