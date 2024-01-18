@@ -1,3 +1,4 @@
 turtle https://github.com/shehryar49/zuko-turtle v0.0.3
 nuke https://github.com/shehryar49/nuke v0.0.2
 sfml https://github.com/shehryar49/zukoSFML v1.0.0
+pluto https://github.com/Nafees10/plutoc v0.1.4
