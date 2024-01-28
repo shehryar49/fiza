@@ -1,6 +1,6 @@
 # fiza
 A simple package manager for [zuko programming language](https://github.com/shehryar49/zuko)
-Fiza allows you to install zuko modules(native modules) on all supported platforms conveniently. It does so by downloading zuko modules from github repos. Every module has it's own repo. On Windows, it downloads module binaries(dll files) and places them in C:\plutonium\modules . On Unix like systems (Linux and Mac OS) , it downloads the source code of each module, builds it using cmake and copies the resulting binaries to /opt/zuko/modules. Every zuko release has fiza bundled with it.
+Fiza allows you to install zuko modules(native modules) on all supported platforms conveniently. It does so by downloading zuko modules from github repos. Every module has it's own repo. On Windows, it downloads module binaries(dll files) and places them in C:\zuko\modules . On Unix like systems (Linux and Mac OS) , it downloads the source code of each module, builds it using cmake and copies the resulting binaries to /opt/zuko/modules. Every zuko release has fiza bundled with it.
 # Contributing
 If you have a zuko module that you want to be available to zuko users via fiza , you can add it to packages/packages.txt. Fork this repo and add a new line to packages/packages.txt for your module. The line should have format: ```
 name repoUrl tagName```
