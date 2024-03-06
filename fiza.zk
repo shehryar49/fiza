@@ -9,7 +9,6 @@
 
 import libcurl
 
-
 var openedFile = nil
 var size = 0
 var ZUKO_VERSION = "v0.3.2"
@@ -44,7 +43,6 @@ function downloadFile(var url,var outputPath)
 }
 function installPackage(var name,var url,var ver)
 {
-
   if(@os == "Windows 32 bit" or @os == "Windows 64 bit")
   {
     # download dll from repo
@@ -68,6 +66,7 @@ function installPackage(var name,var url,var ver)
     if(ret != 0)
       throw Error("[-] Failed to copy files")
     ret = system("rm -rf fizatmp && rm fizatmp.tar.gz")
+    
   }
 }
 function removePackage(var name)
