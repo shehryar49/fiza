@@ -1,7 +1,0 @@
-turtle https://github.com/shehryar49/zuko-turtle v0.0.3
-nuke https://github.com/shehryar49/nuke v0.0.2
-sfml https://github.com/shehryar49/zukoSFML v1.0.0
-falcon https://github.com/Nafees10/falcon v0.1.5
-mariadb https://github.com/shehryar49/zuko-mariadb v0.0.2
-hmac https://github.com/shehryar49/zuko-hmac v0.0.1
-ffi https://github.com/shehryar49/zuko-ffi v0.0.2
