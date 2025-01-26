@@ -35,6 +35,6 @@
             "repo": "https://github.com/shehryar49/zuko-ffi",
             "version": "0.0.2",
             "type": "module"
-        },
+        }
     ]
 }
